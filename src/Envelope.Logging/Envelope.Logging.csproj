@@ -10,16 +10,16 @@
     <PackageTags></PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageReleaseNotes></PackageReleaseNotes>
-    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/envelope-net/Envelope</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/envelope-net/Envelope</RepositoryUrl>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageProjectUrl>https://github.com/envelope-net/envelope-logging</PackageProjectUrl>
+	<RepositoryUrl>https://github.com/envelope-net/envelope-logging</RepositoryUrl>
     <PackageIcon>envelope_icon.png</PackageIcon>
     <NeutralLanguage>en</NeutralLanguage>
     <Copyright>Copyright Envelope</Copyright>
     <Authors>Tomas Pilat</Authors>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\Envelope.snk</AssemblyOriginatorKeyFile>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -35,13 +35,13 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Envelope.Core" Version="1.0.0" />
+		<PackageReference Include="Envelope.Core" Version="1.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.1.46">
+		<PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.2.32">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Serilog" Version="2.10.0" />
+		<PackageReference Include="Serilog" Version="2.11.0" />
 		<PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
 	</ItemGroup>
 
