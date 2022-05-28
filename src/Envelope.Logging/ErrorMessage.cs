@@ -2,10 +2,9 @@
 
 namespace Envelope.Logging;
 
-public class ErrorMessage<TIdentity> : LogMessage<TIdentity>, IErrorMessage<TIdentity>
-	where TIdentity : struct
+public class ErrorMessage : LogMessage, IErrorMessage
 {
-	internal ErrorMessage(ITraceInfo<TIdentity> traceInfo)
+	internal ErrorMessage(ITraceInfo traceInfo)
 		: base(traceInfo)
 	{
 	}

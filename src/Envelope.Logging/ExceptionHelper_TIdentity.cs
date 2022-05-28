@@ -6,7 +6,8 @@ namespace Envelope.Logging;
 public static partial class ExceptionHelper
 {
 	[return: NotNullIfNotNull("logMessage")]
-	public static Exception? ToException(ILogMessage logMessage)
+	public static Exception? ToException<TIdentity>(ILogMessage<TIdentity> logMessage)
+		where TIdentity : struct
 	{
 		if (logMessage == null)
 			return null;
@@ -20,7 +21,8 @@ public static partial class ExceptionHelper
 	}
 
 	[return: NotNullIfNotNull("logMessage")]
-	public static TException? ToException<TException>(ILogMessage logMessage, Func<string, TException> exceptionFactory)
+	public static TException? ToException<TIdentity, TException>(ILogMessage<TIdentity> logMessage, Func<string, TException> exceptionFactory)
+		where TIdentity : struct
 		where TException : Exception
 	{
 		if (logMessage == null)

@@ -11,13 +11,14 @@ using System.Text.Json;
 
 namespace Envelope.Logging;
 
-public class LogMessage : ILogMessage
+public class LogMessage<TIdentity> : ILogMessage<TIdentity>
+	where TIdentity : struct
 {
 	public Guid IdLogMessage { get; set; }
 	public LogLevel LogLevel { get; set; }
 	public int IdLogLevel => (int)LogLevel;
 	public DateTimeOffset CreatedUtc { get; set; }
-	public ITraceInfo TraceInfo { get; set; }
+	public ITraceInfo<TIdentity> TraceInfo { get; set; }
 	public string? LogCode { get; set; }
 	public string? ClientMessage { get; set; }
 	public string? InternalMessage { get; set; }
@@ -28,7 +29,7 @@ public class LogMessage : ILogMessage
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
 	public Exception? Exception { get; internal set; }
-	Exception? ILogMessage.Exception
+	Exception? ILogMessage<TIdentity>.Exception
 	{
 		get => Exception;
 		set => Exception = value;
@@ -50,17 +51,17 @@ public class LogMessage : ILogMessage
 	public Dictionary<string, string>? CustomData { get; set; }
 	public List<string>? Tags { get; set; }
 
-	internal LogMessage(ITraceInfo traceInfo)
+	internal LogMessage(ITraceInfo<TIdentity> traceInfo)
 	{
 		IdLogMessage = Guid.NewGuid();
 		CreatedUtc = DateTimeOffset.UtcNow;
 		TraceInfo = traceInfo ?? throw new ArgumentNullException(nameof(traceInfo));
 	}
 
-	private static ILogMessage CreateLogMessage(
+	private static ILogMessage<TIdentity> CreateLogMessage(
 		string sourceSystemName,
 		LogLevel logLevel,
-		Action<LogMessageBuilder> messageBuilder,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
@@ -68,7 +69,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new LogMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new LogMessageBuilder<TIdentity>(Trace.TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -77,10 +78,10 @@ public class LogMessage : ILogMessage
 		return message;
 	}
 
-	private static ILogMessage CreateLogMessage(
-		ITraceInfo traceInfo,
+	private static ILogMessage<TIdentity> CreateLogMessage(
+		ITraceInfo<TIdentity> traceInfo,
 		LogLevel logLevel,
-		Action<LogMessageBuilder> messageBuilder)
+		Action<LogMessageBuilder<TIdentity>> messageBuilder)
 	{
 		if (traceInfo == null)
 			throw new ArgumentNullException(nameof(traceInfo));
@@ -88,7 +89,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new LogMessageBuilder(traceInfo)
+		var builder = new LogMessageBuilder<TIdentity>(traceInfo)
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -97,10 +98,10 @@ public class LogMessage : ILogMessage
 		return message;
 	}
 
-	private static IErrorMessage CreateErrorMessage(
+	private static IErrorMessage<TIdentity> CreateErrorMessage(
 		string sourceSystemName,
 		LogLevel logLevel,
-		Action<ErrorMessageBuilder> messageBuilder,
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
@@ -108,7 +109,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new ErrorMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new ErrorMessageBuilder<TIdentity>(Trace.TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -117,10 +118,10 @@ public class LogMessage : ILogMessage
 		return message;
 	}
 
-	private static IErrorMessage CreateErrorMessage(
-		ITraceInfo traceInfo,
+	private static IErrorMessage<TIdentity> CreateErrorMessage(
+		ITraceInfo<TIdentity> traceInfo,
 		LogLevel logLevel,
-		Action<ErrorMessageBuilder> messageBuilder)
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder)
 	{
 		if (traceInfo == null)
 			throw new ArgumentNullException(nameof(traceInfo));
@@ -128,7 +129,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new ErrorMessageBuilder(traceInfo)
+		var builder = new ErrorMessageBuilder<TIdentity>(traceInfo)
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -137,82 +138,82 @@ public class LogMessage : ILogMessage
 		return message;
 	}
 
-	public static ILogMessage CreateTraceMessage(
+	public static ILogMessage<TIdentity> CreateTraceMessage(
 		string sourceSystemName,
-		Action<LogMessageBuilder> messageBuilder,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateLogMessage(sourceSystemName, LogLevel.Trace, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static ILogMessage CreateTraceMessage(
-		ITraceInfo traceInfo,
-		Action<LogMessageBuilder> messageBuilder)
+	public static ILogMessage<TIdentity> CreateTraceMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateLogMessage(traceInfo, LogLevel.Trace, messageBuilder);
 
-	public static ILogMessage CreateDebugMessage(
+	public static ILogMessage<TIdentity> CreateDebugMessage(
 		string sourceSystemName,
-		Action<LogMessageBuilder> messageBuilder,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateLogMessage(sourceSystemName, LogLevel.Debug, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static ILogMessage CreateDebugMessage(
-		ITraceInfo traceInfo,
-		Action<LogMessageBuilder> messageBuilder)
+	public static ILogMessage<TIdentity> CreateDebugMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateLogMessage(traceInfo, LogLevel.Debug, messageBuilder);
 
-	public static ILogMessage CreateInformationMessage(
+	public static ILogMessage<TIdentity> CreateInformationMessage(
 		string sourceSystemName,
-		Action<LogMessageBuilder> messageBuilder,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateLogMessage(sourceSystemName, LogLevel.Information, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static ILogMessage CreateInformationMessage(
-		ITraceInfo traceInfo,
-		Action<LogMessageBuilder> messageBuilder)
+	public static ILogMessage<TIdentity> CreateInformationMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateLogMessage(traceInfo, LogLevel.Information, messageBuilder);
 
-	public static ILogMessage CreateWarningMessage(
+	public static ILogMessage<TIdentity> CreateWarningMessage(
 		string sourceSystemName,
-		Action<LogMessageBuilder> messageBuilder,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateLogMessage(sourceSystemName, LogLevel.Warning, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static ILogMessage CreateWarningMessage(
-		ITraceInfo traceInfo,
-		Action<LogMessageBuilder> messageBuilder)
+	public static ILogMessage<TIdentity> CreateWarningMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<LogMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateLogMessage(traceInfo, LogLevel.Warning, messageBuilder);
 
-	public static IErrorMessage CreateErrorMessage(
+	public static IErrorMessage<TIdentity> CreateErrorMessage(
 		string sourceSystemName,
-		Action<ErrorMessageBuilder> messageBuilder,
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateErrorMessage(sourceSystemName, LogLevel.Error, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static IErrorMessage CreateErrorMessage(
-		ITraceInfo traceInfo,
-		Action<ErrorMessageBuilder> messageBuilder)
+	public static IErrorMessage<TIdentity> CreateErrorMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateErrorMessage(traceInfo, LogLevel.Error, messageBuilder);
 
-	public static IErrorMessage CreateCriticalMessage(
+	public static IErrorMessage<TIdentity> CreateCriticalMessage(
 		string sourceSystemName,
-		Action<ErrorMessageBuilder> messageBuilder,
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> CreateErrorMessage(sourceSystemName, LogLevel.Critical, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
-	public static IErrorMessage CreateCriticalMessage(
-		ITraceInfo traceInfo,
-		Action<ErrorMessageBuilder> messageBuilder)
+	public static IErrorMessage<TIdentity> CreateCriticalMessage(
+		ITraceInfo<TIdentity> traceInfo,
+		Action<ErrorMessageBuilder<TIdentity>> messageBuilder)
 		=> CreateErrorMessage(traceInfo, LogLevel.Critical, messageBuilder);
 
 	public IDictionary<string, object?> ToDictionary(Serializer.ISerializer? serializer = null)
