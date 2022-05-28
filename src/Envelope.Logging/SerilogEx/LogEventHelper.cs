@@ -8,8 +8,8 @@ public static class LogEventHelper
 {
 	public const string IS_DB_LOG = "IsDbLog";
 	public const string SCOPE = "Scope";
-	private static readonly Lazy<ScalarValue> _methodCallId = new (() => new(nameof(ILogMessage<Guid>.TraceInfo.TraceFrame.MethodCallId)));
-	private static readonly Lazy<ScalarValue> _correlationId = new(() => new(nameof(ILogMessage<Guid>.TraceInfo.CorrelationId)));
+	private static readonly Lazy<ScalarValue> _methodCallId = new (() => new(nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId)));
+	private static readonly Lazy<ScalarValue> _correlationId = new(() => new(nameof(ILogMessage.TraceInfo.CorrelationId)));
 	private static readonly Lazy<ScalarValue> _isDbLog = new(() => new(IS_DB_LOG));
 
 	[DebuggerHidden]
@@ -107,6 +107,141 @@ public static class LogEventHelper
 	[DebuggerStepThrough]
 	public static IDictionary<string, object?>? ConvertHardwareInfoToDictionary(LogEvent logEvent)
 		=> ConvertToDictionary(LoggerSettings.HardwareInfo, logEvent);
+
+	[DebuggerHidden]
+	[DebuggerStepThrough]
+	public static IDictionary<string, object?>? ConvertLogToDictionary(LogEvent logEvent)
+	{
+		if (logEvent == null)
+			return null;
+
+		var result = new Dictionary<string, object?>
+		{
+			{ nameof(logEvent.Level), logEvent.Level },
+			{ nameof(logEvent.Timestamp), logEvent.Timestamp.UtcDateTime },
+			{ nameof(logEvent.MessageTemplate), logEvent.RenderMessage(null) },
+			{ nameof(logEvent.Properties), logEvent.Properties },
+			{ nameof(logEvent.Exception), logEvent.Exception },
+			{ nameof(ILogMessage.TraceInfo.RuntimeUniqueKey), EnvironmentInfo.RUNTIME_UNIQUE_KEY },
+			{ IS_DB_LOG, false }
+		};
+
+		var isDBLogIsSet = false;
+		if (logEvent.Properties.TryGetValue(IS_DB_LOG, out LogEventPropertyValue? isDBLogValue))
+		{
+			if (isDBLogValue is ScalarValue scalarValue)
+			{
+				if (scalarValue.Value is bool isDBLog && isDBLog)
+				{
+					result[IS_DB_LOG] = isDBLog;
+					isDBLogIsSet = true;
+				}
+			}
+		}
+		if (logEvent.Properties.TryGetValue(SCOPE, out LogEventPropertyValue? scopeValue))
+		{
+			if (scopeValue is SequenceValue sequenceValue)
+			{
+				//var last = sequenceValue.Elements.LastOrDefault();
+				//if (last is DictionaryValue lastDict && lastDict.Elements != null)
+				//{
+				//	if (lastDict.Elements.TryGetValue(new ScalarValue(IS_DB_LOG), out LogEventPropertyValue? scopeIsDBLogValue))
+				//	{
+				//		if (scopeIsDBLogValue is ScalarValue scalarValue)
+				//		{
+				//			if (scalarValue.Value is bool isDBLog && isDBLog)
+				//			{
+				//				result[IS_DB_LOG] = isDBLog;
+				//			}
+				//		}
+				//	}
+				//}
+
+				var elements = sequenceValue.Elements.Reverse();
+				var methodCallIdIsSet = false;
+				var correlationIdIsSet = false;
+				foreach (var element in elements)
+				{
+					if (element is DictionaryValue dict && dict.Elements != null)
+					{
+						if (!methodCallIdIsSet && dict.Elements.TryGetValue(_methodCallId.Value, out LogEventPropertyValue? scopeMethodCallIdValue))
+						{
+							if (scopeMethodCallIdValue is ScalarValue scalarValue)
+							{
+								if (scalarValue.Value is Guid methodCallId)
+								{
+									result[nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId)] = methodCallId;
+									methodCallIdIsSet = true;
+								}
+							}
+						}
+
+						if (!correlationIdIsSet && dict.Elements.TryGetValue(_correlationId.Value, out LogEventPropertyValue? scopeCorrelationIdValue))
+						{
+							if (scopeCorrelationIdValue is ScalarValue scalarValue)
+							{
+								if (scalarValue.Value is Guid correlationId)
+								{
+									result[nameof(ILogMessage.TraceInfo.CorrelationId)] = correlationId;
+									correlationIdIsSet = true;
+								}
+							}
+						}
+
+						if (!isDBLogIsSet && dict.Elements.TryGetValue(_isDbLog.Value, out LogEventPropertyValue? scopeIsDBLogValue))
+						{
+							if (scopeIsDBLogValue is ScalarValue scalarValue)
+							{
+								if (scalarValue.Value is bool isDBLog && isDBLog)
+								{
+									result[IS_DB_LOG] = isDBLog;
+									isDBLogIsSet = true;
+								}
+							}
+						}
+					}
+
+					if (methodCallIdIsSet && correlationIdIsSet && isDBLogIsSet)
+						break;
+				}
+			}
+		}
+
+		if (logEvent.Properties.TryGetValue(nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId), out LogEventPropertyValue? methodCallIdValue))
+		{
+			if (methodCallIdValue is ScalarValue scalarValue)
+			{
+				if (scalarValue.Value is Guid methodCallId)
+				{
+					result[nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId)] = methodCallId;
+				}
+			}
+		}
+
+		if (logEvent.Properties.TryGetValue(nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId), out LogEventPropertyValue? correlationIdValue))
+		{
+			if (correlationIdValue is ScalarValue scalarValue)
+			{
+				if (scalarValue.Value is Guid correlationId)
+				{
+					result[nameof(ILogMessage.TraceInfo.CorrelationId)] = correlationId;
+				}
+			}
+		}
+
+		if (logEvent.Properties.TryGetValue(Serilog.Core.Constants.SourceContextPropertyName, out LogEventPropertyValue? sourceContextValue))
+		{
+			if (sourceContextValue is ScalarValue scalarValue)
+			{
+				if (scalarValue.Value is string sourceContext)
+				{
+					result.Add(Serilog.Core.Constants.SourceContextPropertyName, sourceContext);
+				}
+			}
+		}
+
+		return result;
+	}
 
 	[DebuggerHidden]
 	[DebuggerStepThrough]

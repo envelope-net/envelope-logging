@@ -4,13 +4,14 @@ using System.Runtime.CompilerServices;
 
 namespace Envelope.Logging;
 
-public class MethodLogScope : IDisposable
+public class MethodLogScope<TIdentity> : IDisposable
+	where TIdentity : struct
 {
 	private readonly IDisposable _logScope;
 
-	public ITraceInfo TraceInfo { get; }
+	public ITraceInfo<TIdentity> TraceInfo { get; }
 
-	public MethodLogScope(ITraceInfo traceInfo, IDisposable logScope)
+	public MethodLogScope(ITraceInfo<TIdentity> traceInfo, IDisposable logScope)
 	{
 		TraceInfo = traceInfo ?? throw new ArgumentNullException(nameof(traceInfo));
 		_logScope = logScope;
@@ -36,29 +37,29 @@ public class MethodLogScope : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	public static MethodLogScope Create(
+	public static MethodLogScope<TIdentity> Create(
 		string sourceSystemName,
 		ILogger logger,
 		IEnumerable<MethodParameter>? methodParameters = null,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(sourceSystemName, logger, (ITraceInfo?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+		=> Create(sourceSystemName, logger, (ITraceInfo<TIdentity>?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
+	public static MethodLogScope<TIdentity> Create(
 		string sourceSystemName,
 		ILogger logger,
-		MethodLogScope? methodLogScope,
+		MethodLogScope<TIdentity>? methodLogScope,
 		IEnumerable<MethodParameter>? methodParameters = null,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> Create(sourceSystemName, logger, methodLogScope?.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
+	public static MethodLogScope<TIdentity> Create(
 		string sourceSystemName,
 		ILogger logger,
-		ITraceInfo? previousTraceInfo,
+		ITraceInfo<TIdentity>? previousTraceInfo,
 		IEnumerable<MethodParameter>? methodParameters = null,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
@@ -68,7 +69,7 @@ public class MethodLogScope : IDisposable
 			throw new ArgumentNullException(nameof(logger));
 
 		var traceInfo =
-			new TraceInfoBuilder(
+			new TraceInfoBuilder<TIdentity>(
 				sourceSystemName,
 				new TraceFrameBuilder()
 					.CallerMemberName(memberName)
@@ -81,11 +82,11 @@ public class MethodLogScope : IDisposable
 
 		var disposable = logger.BeginScope(new Dictionary<string, Guid?>
 		{
-			[nameof(ILogMessage.TraceInfo.TraceFrame.MethodCallId)] = traceInfo.TraceFrame.MethodCallId,
-			[nameof(ILogMessage.TraceInfo.CorrelationId)] = traceInfo.CorrelationId
+			[nameof(ILogMessage<TIdentity>.TraceInfo.TraceFrame.MethodCallId)] = traceInfo.TraceFrame.MethodCallId,
+			[nameof(ILogMessage<TIdentity>.TraceInfo.CorrelationId)] = traceInfo.CorrelationId
 		});
 
-		var scope = new MethodLogScope(traceInfo, disposable);
+		var scope = new MethodLogScope<TIdentity>(traceInfo, disposable);
 		return scope;
 	}
 }

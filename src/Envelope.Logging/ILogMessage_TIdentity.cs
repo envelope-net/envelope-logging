@@ -3,7 +3,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Envelope.Logging;
 
-public interface ILogMessage : Serializer.IDictionaryObject
+public interface ILogMessage<TIdentity> : Serializer.IDictionaryObject
+	where TIdentity : struct
 {
 	Guid IdLogMessage { get; set; }
 
@@ -13,7 +14,7 @@ public interface ILogMessage : Serializer.IDictionaryObject
 
 	DateTimeOffset CreatedUtc { get; set; }
 
-	ITraceInfo TraceInfo { get; set; }
+	ITraceInfo<TIdentity> TraceInfo { get; set; }
 
 	string? LogCode { get; set; }
 

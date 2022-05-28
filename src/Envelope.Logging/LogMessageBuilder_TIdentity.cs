@@ -5,9 +5,10 @@ using Envelope.Trace;
 
 namespace Envelope.Logging;
 
-public interface ILogMessageBuilder<TBuilder, TObject>
-	where TBuilder : ILogMessageBuilder<TBuilder, TObject>
-	where TObject : ILogMessage
+public interface ILogMessageBuilder<TBuilder, TObject, TIdentity>
+	where TBuilder : ILogMessageBuilder<TBuilder, TObject, TIdentity>
+	where TObject : ILogMessage<TIdentity>
+	where TIdentity : struct
 {
 	TBuilder Object(TObject logMessage);
 
@@ -17,7 +18,7 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 
 	TBuilder Created(DateTime created, bool force = false);
 
-	TBuilder TraceInfo(ITraceInfo traceInfo, bool force = false);
+	TBuilder TraceInfo(ITraceInfo<TIdentity> traceInfo, bool force = false);
 
 	TBuilder LogCode(string? logCode, bool force = true);
 
@@ -62,9 +63,10 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 	TBuilder AddTag(string tag, bool force = false);
 }
 
-public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuilder<TBuilder, TObject>
-	where TBuilder : LogMessageBuilderBase<TBuilder, TObject>
-	where TObject : ILogMessage
+public abstract class LogMessageBuilderBase<TBuilder, TObject, TIdentity> : ILogMessageBuilder<TBuilder, TObject, TIdentity>
+	where TBuilder : LogMessageBuilderBase<TBuilder, TObject, TIdentity>
+	where TObject : ILogMessage<TIdentity>
+	where TIdentity : struct
 {
 	protected readonly TBuilder _builder;
 	protected TObject _logMessage;
@@ -100,7 +102,7 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder TraceInfo(ITraceInfo traceInfo, bool force = false)
+	public TBuilder TraceInfo(ITraceInfo<TIdentity> traceInfo, bool force = false)
 	{
 		if (force || _logMessage.TraceInfo == null)
 			_logMessage.TraceInfo = traceInfo;
@@ -318,36 +320,37 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 	}
 }
 
-public class LogMessageBuilder : LogMessageBuilderBase<LogMessageBuilder, ILogMessage>
+public class LogMessageBuilder<TIdentity> : LogMessageBuilderBase<LogMessageBuilder<TIdentity>, ILogMessage<TIdentity>, TIdentity>
+	where TIdentity : struct
 {
-	public LogMessageBuilder(MethodLogScope methodLogScope)
+	public LogMessageBuilder(MethodLogScope<TIdentity> methodLogScope)
 		: this(methodLogScope?.TraceInfo!)
 	{
 	}
 
-	public LogMessageBuilder(ITraceInfo traceInfo)
-		: this(new LogMessage(traceInfo))
+	public LogMessageBuilder(ITraceInfo<TIdentity> traceInfo)
+		: this(new LogMessage<TIdentity>(traceInfo))
 	{
 	}
 
-	public LogMessageBuilder(LogMessage logMessage)
+	public LogMessageBuilder(LogMessage<TIdentity> logMessage)
 		: base(logMessage)
 	{
 	}
 
-	public static implicit operator LogMessage?(LogMessageBuilder builder)
+	public static implicit operator LogMessage<TIdentity>?(LogMessageBuilder<TIdentity> builder)
 	{
 		if (builder == null)
 			return null;
 
-		return builder._logMessage as LogMessage;
+		return builder._logMessage as LogMessage<TIdentity>;
 	}
 
-	public static implicit operator LogMessageBuilder?(LogMessage logMessage)
+	public static implicit operator LogMessageBuilder<TIdentity>?(LogMessage<TIdentity> logMessage)
 	{
 		if (logMessage == null)
 			return null;
 
-		return new LogMessageBuilder(logMessage);
+		return new LogMessageBuilder<TIdentity>(logMessage);
 	}
 }
