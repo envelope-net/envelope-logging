@@ -28,7 +28,7 @@ public static class SerilogExtensions
 	public static LoggerConfiguration EnvelopeBatchSink(
 		this LoggerSinkConfiguration loggerConfiguration,
 		Func<IEnumerable<LogEvent>, CancellationToken, Task<ulong>> writeBatchCallback,
-		BatchWriterOptions? options,
+		IBatchWriterOptions? options,
 		LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
 		=> EnvelopeBatchSink(
 			loggerConfiguration,
@@ -41,7 +41,7 @@ public static class SerilogExtensions
 		this LoggerSinkConfiguration loggerConfiguration,
 		Func<LogEvent, bool> includeCallBack,
 		Func<IEnumerable<LogEvent>, CancellationToken, Task<ulong>> writeBatchCallback,
-		BatchWriterOptions? options,
+		IBatchWriterOptions? options,
 		LogEventLevel restrictedToMinimumLevel = LevelAlias.Minimum)
 	{
 		if (loggerConfiguration == null)

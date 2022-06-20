@@ -236,6 +236,9 @@ public class LogMessage : ILogMessage
 		if (!string.IsNullOrWhiteSpace(InternalMessage))
 			dict.Add(nameof(InternalMessage), InternalMessage);
 
+		if (!string.IsNullOrWhiteSpace(TraceInfo.SourceSystemName))
+			dict.Add(nameof(TraceInfo.SourceSystemName), TraceInfo.SourceSystemName);
+
 		if (TraceInfo.TraceFrame != null)
 		{
 			dict.Add(nameof(TraceInfo.TraceFrame.MethodCallId), TraceInfo.TraceFrame.MethodCallId);
