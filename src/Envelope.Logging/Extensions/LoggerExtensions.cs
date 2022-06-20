@@ -46,6 +46,20 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
+	public static ILogMessage? PrepareTraceMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder>? messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Trace))
+			return null;
+
+		var builder = new LogMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Trace);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
+	}
+
 	public static ILogMessage? LogTraceMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)
 	{
 		if (messageBuilder == null)
@@ -99,6 +113,20 @@ public static partial class LoggerExtensions
 			logger.LogDebug($"{LoggerSettings.LogMessage_Template}", message.ToDictionary());
 
 		message.IsLogged = true;
+	}
+
+	public static ILogMessage? PrepareDebugMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Debug))
+			return null;
+
+		var builder = new LogMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Debug);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
 	}
 
 	public static ILogMessage? LogDebugMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)
@@ -156,6 +184,20 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
+	public static ILogMessage? PrepareInformationMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Information))
+			return null;
+
+		var builder = new LogMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Information);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
+	}
+
 	public static ILogMessage? LogInformationMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)
 	{
 		if (messageBuilder == null)
@@ -211,6 +253,20 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
+	public static ILogMessage? PrepareWarningMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Warning))
+			return null;
+
+		var builder = new LogMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Warning);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
+	}
+
 	public static ILogMessage? LogWarningMessage(this ILogger logger, ITraceInfo traceInfo, Action<LogMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)
 	{
 		if (messageBuilder == null)
@@ -263,6 +319,20 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
+	public static IErrorMessage? PrepareErrorMessage(this ILogger logger, ITraceInfo traceInfo, Action<ErrorMessageBuilder> messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Error))
+			return null;
+
+		var builder = new ErrorMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Error);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
+	}
+
 	public static IErrorMessage LogErrorMessage(this ILogger logger, ITraceInfo traceInfo, Action<ErrorMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)
 	{
 		if (messageBuilder == null)
@@ -310,6 +380,20 @@ public static partial class LoggerExtensions
 			logger.LogCritical($"{LoggerSettings.LogMessage_Template}", message.ToDictionary());
 
 		message.IsLogged = true;
+	}
+
+	public static IErrorMessage? PrepareCriticalMessage(this ILogger logger, ITraceInfo traceInfo, Action<ErrorMessageBuilder> messageBuilder, bool onlyIfEnabled = false)
+	{
+		if (onlyIfEnabled && !logger.IsEnabled(LogLevel.Critical))
+			return null;
+
+		var builder = new ErrorMessageBuilder(traceInfo)
+			.LogLevel(LogLevel.Critical);
+
+		messageBuilder?.Invoke(builder);
+		var message = builder.Build();
+
+		return message;
 	}
 
 	public static IErrorMessage LogCriticalMessage(this ILogger logger, ITraceInfo traceInfo, Action<ErrorMessageBuilder> messageBuilder, bool skipIfAlreadyLogged)

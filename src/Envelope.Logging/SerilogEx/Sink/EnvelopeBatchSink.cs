@@ -19,7 +19,7 @@ public class EnvelopeBatchSink : BatchWriter<LogEvent>, ILogEventSink, IDisposab
 	public EnvelopeBatchSink(
 		Func<LogEvent, bool> includeCallBack,
 		Func<IEnumerable<LogEvent>, CancellationToken, Task<ulong>> writeBatchCallback,
-		BatchWriterOptions? options,
+		IBatchWriterOptions? options,
 		Action<string, object?, object?, object?>? errorLogger = null)
 		: base(includeCallBack, writeBatchCallback, options, errorLogger ?? SelfLog.WriteLine)
 	{
