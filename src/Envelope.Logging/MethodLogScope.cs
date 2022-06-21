@@ -37,6 +37,24 @@ public class MethodLogScope : IDisposable
 	}
 
 	public static MethodLogScope Create(
+		ITraceInfo previousTraceInfo,
+		ILogger logger,
+		IEnumerable<MethodParameter>? methodParameters = null,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> Create(previousTraceInfo.SourceSystemName, logger, previousTraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+
+	public static MethodLogScope Create(
+		MethodLogScope methodLogScope,
+		ILogger logger,
+		IEnumerable<MethodParameter>? methodParameters = null,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> Create(methodLogScope.TraceInfo.SourceSystemName, logger, methodLogScope.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+
+	public static MethodLogScope Create(
 		string sourceSystemName,
 		ILogger logger,
 		IEnumerable<MethodParameter>? methodParameters = null,
