@@ -43,7 +43,7 @@ public class MethodLogScope : IDisposable
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(previousTraceInfo.SourceSystemName, logger, previousTraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+		=> Create(previousTraceInfo?.SourceSystemName!, logger, previousTraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
 	public static MethodLogScope Create(
 		MethodLogScope methodLogScope,
