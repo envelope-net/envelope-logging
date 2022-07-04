@@ -33,7 +33,7 @@ public static partial class LoggerExtensions
 			[nameof(ILogMessage<TIdentity>.TraceInfo.TraceFrame.MethodCallId)] = methodCallId
 		});
 
-	public static void LogTraceMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogTraceMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -50,7 +50,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static ILogMessage<TIdentity>? LogTraceMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogTraceMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -76,14 +76,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		where TIdentity : struct
 		=> LogTraceMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static ILogMessage<TIdentity>? LogTraceMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogTraceMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
@@ -92,7 +92,7 @@ public static partial class LoggerExtensions
 		return LogTraceMessage(logger, scope.TraceInfo, messageBuilder, skipIfAlreadyLogged);
 	}
 
-	public static void LogDebugMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogDebugMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -109,7 +109,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static ILogMessage<TIdentity>? LogDebugMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogDebugMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -135,14 +135,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		where TIdentity : struct
 		=> LogDebugMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static ILogMessage<TIdentity>? LogDebugMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogDebugMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
@@ -151,7 +151,7 @@ public static partial class LoggerExtensions
 		return LogDebugMessage(logger, scope.TraceInfo, messageBuilder, skipIfAlreadyLogged);
 	}
 
-	public static void LogInformationMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogInformationMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -168,7 +168,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static ILogMessage<TIdentity>? LogInformationMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogInformationMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -194,14 +194,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		where TIdentity : struct
 		=> LogInformationMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static ILogMessage<TIdentity>? LogInformationMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogInformationMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
@@ -210,7 +210,7 @@ public static partial class LoggerExtensions
 		return LogInformationMessage(logger, scope.TraceInfo, messageBuilder, skipIfAlreadyLogged);
 	}
 
-	public static void LogWarningMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogWarningMessage<TIdentity>(this ILogger logger, ILogMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -227,7 +227,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static ILogMessage<TIdentity>? LogWarningMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogWarningMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -253,14 +253,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		where TIdentity : struct
 		=> LogWarningMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static ILogMessage<TIdentity>? LogWarningMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static ILogMessage<TIdentity>? LogWarningMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<LogMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
@@ -269,7 +269,7 @@ public static partial class LoggerExtensions
 		return LogWarningMessage(logger, scope.TraceInfo, messageBuilder, skipIfAlreadyLogged);
 	}
 
-	public static void LogErrorMessage<TIdentity>(this ILogger logger, IErrorMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogErrorMessage<TIdentity>(this ILogger logger, IErrorMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -283,7 +283,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static IErrorMessage<TIdentity> LogErrorMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static IErrorMessage<TIdentity> LogErrorMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -306,14 +306,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<ErrorMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 		where TIdentity : struct
 		=> LogErrorMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static IErrorMessage<TIdentity> LogErrorMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static IErrorMessage<TIdentity> LogErrorMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
@@ -322,7 +322,7 @@ public static partial class LoggerExtensions
 		return LogErrorMessage(logger, scope.TraceInfo, messageBuilder, skipIfAlreadyLogged);
 	}
 
-	public static void LogCriticalMessage<TIdentity>(this ILogger logger, IErrorMessage<TIdentity> message, bool skipIfAlreadyLogged)
+	public static void LogCriticalMessage<TIdentity>(this ILogger logger, IErrorMessage<TIdentity> message, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (message == null)
@@ -336,7 +336,7 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 	}
 
-	public static IErrorMessage<TIdentity> LogCriticalMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static IErrorMessage<TIdentity> LogCriticalMessage<TIdentity>(this ILogger logger, ITraceInfo<TIdentity> traceInfo, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (messageBuilder == null)
@@ -359,14 +359,14 @@ public static partial class LoggerExtensions
 		this ILogger logger,
 		string sourceSystemName,
 		Action<ErrorMessageBuilder<TIdentity>> messageBuilder,
-		bool skipIfAlreadyLogged,
+		bool skipIfAlreadyLogged = true,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
 			where TIdentity : struct
 		=> LogCriticalMessage(logger, TraceInfo<TIdentity>.Create(sourceSystemName, (EnvelopePrincipal<TIdentity>?)null, null, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
 
-	public static IErrorMessage<TIdentity> LogCriticalMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged)
+	public static IErrorMessage<TIdentity> LogCriticalMessage<TIdentity>(this ILogger logger, MethodLogScope<TIdentity> scope, Action<ErrorMessageBuilder<TIdentity>> messageBuilder, bool skipIfAlreadyLogged = true)
 		where TIdentity : struct
 	{
 		if (scope?.TraceInfo == null)
