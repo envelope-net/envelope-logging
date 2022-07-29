@@ -37,6 +37,10 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 
 	TBuilder Detail(string? detail, bool force = false);
 
+	TBuilder AppendDetail(string? detail);
+
+	TBuilder AppendDetail(Exception? exception);
+
 	TBuilder IsLogged(bool isLogged, bool force = false);
 
 	TBuilder CommandQueryName(string? commandQueryName, bool force = false);
@@ -66,6 +70,8 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 	where TBuilder : LogMessageBuilderBase<TBuilder, TObject>
 	where TObject : ILogMessage
 {
+	private const string DETAIL_DELIMITER = "**************************";
+
 	protected readonly TBuilder _builder;
 	protected TObject _logMessage;
 
@@ -179,6 +185,32 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 	{
 		if (force || string.IsNullOrWhiteSpace(_logMessage.Detail))
 			_logMessage.Detail = detail;
+
+		return _builder;
+	}
+
+	public TBuilder AppendDetail(string? detail)
+	{
+		if (string.IsNullOrWhiteSpace(detail))
+			return _builder;
+
+		if (string.IsNullOrWhiteSpace(_logMessage.Detail))
+			_logMessage.Detail = detail;
+		else
+			_logMessage.Detail = $"{_logMessage.Detail}{Environment.NewLine}{DETAIL_DELIMITER}{Environment.NewLine}{detail}";
+
+		return _builder;
+	}
+
+	public TBuilder AppendDetail(Exception? exception)
+	{
+		if (exception == null)
+			return _builder;
+
+		if (string.IsNullOrWhiteSpace(_logMessage.Detail))
+			_logMessage.Detail = exception.ToStringTrace();
+		else
+			_logMessage.Detail = $"{_logMessage.Detail}{Environment.NewLine}{DETAIL_DELIMITER}{Environment.NewLine}{exception.ToStringTrace()}";
 
 		return _builder;
 	}
