@@ -58,7 +58,7 @@ public class LogMessage : ILogMessage
 	}
 
 	private static ILogMessage CreateLogMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		LogLevel logLevel,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
@@ -68,7 +68,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new LogMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new LogMessageBuilder(Trace.TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -98,7 +98,7 @@ public class LogMessage : ILogMessage
 	}
 
 	private static IErrorMessage CreateErrorMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		LogLevel logLevel,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
@@ -108,7 +108,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new ErrorMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new ErrorMessageBuilder(Trace.TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -138,12 +138,12 @@ public class LogMessage : ILogMessage
 	}
 
 	public static ILogMessage CreateTraceMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Trace, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Trace, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateTraceMessage(
 		ITraceInfo traceInfo,
@@ -151,12 +151,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Trace, messageBuilder);
 
 	public static ILogMessage CreateDebugMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Debug, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Debug, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateDebugMessage(
 		ITraceInfo traceInfo,
@@ -164,12 +164,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Debug, messageBuilder);
 
 	public static ILogMessage CreateInformationMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Information, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Information, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateInformationMessage(
 		ITraceInfo traceInfo,
@@ -177,12 +177,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Information, messageBuilder);
 
 	public static ILogMessage CreateWarningMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Warning, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Warning, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateWarningMessage(
 		ITraceInfo traceInfo,
@@ -190,12 +190,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Warning, messageBuilder);
 
 	public static IErrorMessage CreateErrorMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateErrorMessage(sourceSystemName, LogLevel.Error, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateErrorMessage(applicationContext, LogLevel.Error, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static IErrorMessage CreateErrorMessage(
 		ITraceInfo traceInfo,
@@ -203,12 +203,12 @@ public class LogMessage : ILogMessage
 		=> CreateErrorMessage(traceInfo, LogLevel.Error, messageBuilder);
 
 	public static IErrorMessage CreateCriticalMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateErrorMessage(sourceSystemName, LogLevel.Critical, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateErrorMessage(applicationContext, LogLevel.Critical, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static IErrorMessage CreateCriticalMessage(
 		ITraceInfo traceInfo,

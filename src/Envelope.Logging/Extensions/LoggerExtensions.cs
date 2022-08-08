@@ -83,6 +83,16 @@ public static partial class LoggerExtensions
 
 	public static ILogMessage? LogTraceMessage(
 		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<LogMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> LogTraceMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
+	public static ILogMessage? LogTraceMessage(
+		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder> messageBuilder,
 		bool skipIfAlreadyLogged = true,
@@ -149,6 +159,17 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 		return message;
 	}
+
+	public static ILogMessage? LogDebugMessage(
+		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<LogMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> LogDebugMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
 
 	public static ILogMessage? LogDebugMessage(
 		this ILogger logger,
@@ -221,6 +242,17 @@ public static partial class LoggerExtensions
 
 	public static ILogMessage? LogInformationMessage(
 		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<LogMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> LogInformationMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
+
+	public static ILogMessage? LogInformationMessage(
+		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder> messageBuilder,
 		bool skipIfAlreadyLogged = true,
@@ -290,6 +322,17 @@ public static partial class LoggerExtensions
 
 	public static ILogMessage? LogWarningMessage(
 		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<LogMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> LogWarningMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
+
+	public static ILogMessage? LogWarningMessage(
+		this ILogger logger,
 		string sourceSystemName,
 		Action<LogMessageBuilder> messageBuilder,
 		bool skipIfAlreadyLogged = true,
@@ -353,6 +396,17 @@ public static partial class LoggerExtensions
 
 	public static IErrorMessage LogErrorMessage(
 		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<ErrorMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+		=> LogErrorMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
+
+	public static IErrorMessage LogErrorMessage(
+		this ILogger logger,
 		string sourceSystemName,
 		Action<ErrorMessageBuilder> messageBuilder,
 		bool skipIfAlreadyLogged = true,
@@ -413,6 +467,18 @@ public static partial class LoggerExtensions
 		message.IsLogged = true;
 		return message;
 	}
+
+	public static IErrorMessage LogCriticalMessage(
+		this ILogger logger,
+		IApplicationContext applicationContext,
+		Action<ErrorMessageBuilder> messageBuilder,
+		bool skipIfAlreadyLogged = true,
+		[CallerMemberName] string memberName = "",
+		[CallerFilePath] string sourceFilePath = "",
+		[CallerLineNumber] int sourceLineNumber = 0)
+
+		=> LogCriticalMessage(logger, TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber), messageBuilder, skipIfAlreadyLogged);
+
 
 	public static IErrorMessage LogCriticalMessage(
 		this ILogger logger,

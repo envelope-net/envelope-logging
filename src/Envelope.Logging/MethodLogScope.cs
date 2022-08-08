@@ -54,26 +54,26 @@ public class MethodLogScope : IDisposable
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> Create(methodLogScope.TraceInfo.SourceSystemName, logger, methodLogScope.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
-		string sourceSystemName,
-		ILogger logger,
-		IEnumerable<MethodParameter>? methodParameters = null,
-		[CallerMemberName] string memberName = "",
-		[CallerFilePath] string sourceFilePath = "",
-		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(sourceSystemName, logger, (ITraceInfo?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+	//public static MethodLogScope Create(
+	//	string sourceSystemName,
+	//	ILogger logger,
+	//	IEnumerable<MethodParameter>? methodParameters = null,
+	//	[CallerMemberName] string memberName = "",
+	//	[CallerFilePath] string sourceFilePath = "",
+	//	[CallerLineNumber] int sourceLineNumber = 0)
+	//	=> Create(sourceSystemName, logger, (ITraceInfo?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
-		string sourceSystemName,
-		ILogger logger,
-		MethodLogScope? methodLogScope,
-		IEnumerable<MethodParameter>? methodParameters = null,
-		[CallerMemberName] string memberName = "",
-		[CallerFilePath] string sourceFilePath = "",
-		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(sourceSystemName, logger, methodLogScope?.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+	//public static MethodLogScope Create(
+	//	string sourceSystemName,
+	//	ILogger logger,
+	//	MethodLogScope? methodLogScope,
+	//	IEnumerable<MethodParameter>? methodParameters = null,
+	//	[CallerMemberName] string memberName = "",
+	//	[CallerFilePath] string sourceFilePath = "",
+	//	[CallerLineNumber] int sourceLineNumber = 0)
+	//	=> Create(sourceSystemName, logger, methodLogScope?.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
+	private static MethodLogScope Create(
 		string sourceSystemName,
 		ILogger logger,
 		ITraceInfo? previousTraceInfo,
