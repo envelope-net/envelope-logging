@@ -16,18 +16,16 @@ public class MethodLogScope : IDisposable
 		_logScope = logScope;
 	}
 
-	private bool disposed;
+	private bool _disposed;
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!disposed)
-		{
-			if (disposing)
-			{
-				_logScope?.Dispose();
-			}
+		if (_disposed)
+			return;
 
-			disposed = true;
-		}
+		_disposed = true;
+
+		if (disposing)
+			_logScope?.Dispose();
 	}
 
 	public void Dispose()
