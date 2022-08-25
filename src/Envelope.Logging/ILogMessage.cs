@@ -27,6 +27,7 @@ public interface ILogMessage : Serializer.IDictionaryObject
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
 	Exception? Exception { get; set; }
+	bool ShouldSerializeException();
 
 	string? StackTrace { get; set; }
 
@@ -52,7 +53,13 @@ public interface ILogMessage : Serializer.IDictionaryObject
 
 	string? DisplayPropertyName { get; set; }
 
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	bool IsValidationError { get; set; }
+	bool ShouldSerializeIsValidationError();
 
 	Dictionary<string, string>? CustomData { get; set; }
 

@@ -28,6 +28,7 @@ public class LogMessage : ILogMessage
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
 	public Exception? Exception { get; internal set; }
+	public bool ShouldSerializeException() => false;
 	Exception? ILogMessage.Exception
 	{
 		get => Exception;
@@ -44,7 +45,14 @@ public class LogMessage : ILogMessage
 	public Guid? IdCommandQuery { get; set; }
 	public decimal? MethodCallElapsedMilliseconds { get; set; }
 	public string? PropertyName { get; set; }
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public object? ValidationFailure { get; set; }
+	public bool ShouldSerializeIsValidationError() => false;
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
 	public Dictionary<string, string>? CustomData { get; set; }
