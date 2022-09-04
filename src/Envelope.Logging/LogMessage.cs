@@ -37,9 +37,30 @@ public class LogMessage : ILogMessage
 
 	public string? StackTrace { get; set; }
 	public string? Detail { get; set; }
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string ClientMessageWithId => ToString(true, false, false);
+	public bool ShouldSerializeClientMessageWithId() => false;
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string ClientMessageWithIdAndPropName => ToString(true, true, false);
+	public bool ShouldSerializeClientMessageWithIdAndPropName() => false;
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string FullMessage => ToString(true, true, true);
+	public bool ShouldSerializeFullMessage() => false;
+
 	public bool IsLogged { get; set; }
 	public string? CommandQueryName { get; set; }
 	public Guid? IdCommandQuery { get; set; }
@@ -52,7 +73,7 @@ public class LogMessage : ILogMessage
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
 	public object? ValidationFailure { get; set; }
-	public bool ShouldSerializeIsValidationError() => false;
+	public bool ShouldSerializeValidationFailure() => false;
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
 	public Dictionary<string, string>? CustomData { get; set; }
