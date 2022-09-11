@@ -46,28 +46,28 @@ public class LogWriter : ILogWriter, IDisposable
 		logWriter?.Dispose();
 	}
 
-	private bool disposed;
+	private bool _disposed;
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!disposed)
+		if (_disposed)
+			return;
+
+		_disposed = true;
+
+		if (disposing)
 		{
-			if (disposing)
+			foreach (var batchWriter in _batchWriters.Values)
 			{
-				foreach (var batchWriter in _batchWriters.Values)
+				try
 				{
-					try
-					{
-						batchWriter?.Dispose();
-					}
-					catch (Exception ex)
-					{
-						var msg = string.Format($"{nameof(LogWriter)}: Disposing {nameof(batchWriter)} '{batchWriter?.GetType().FullName ?? "null"}': {ex.ToStringTrace()}");
-						Serilog.Log.Logger.Error(ex, msg);
-					}
+					batchWriter?.Dispose();
+				}
+				catch (Exception ex)
+				{
+					var msg = string.Format($"{nameof(LogWriter)}: Disposing {nameof(batchWriter)} '{batchWriter?.GetType().FullName ?? "null"}': {ex.ToStringTrace()}");
+					Serilog.Log.Logger.Error(ex, msg);
 				}
 			}
-
-			disposed = true;
 		}
 	}
 

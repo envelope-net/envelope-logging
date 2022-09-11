@@ -46,7 +46,7 @@ public class ErrorMessageBuilder<TIdentity> : ErrorMessageBuilderBase<ErrorMessa
 	{
 	}
 
-	public ErrorMessageBuilder(ErrorMessage<TIdentity> errorMessage)
+	public ErrorMessageBuilder(IErrorMessage<TIdentity> errorMessage)
 		: base(errorMessage)
 	{
 	}

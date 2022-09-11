@@ -16,18 +16,16 @@ public class MethodLogScope : IDisposable
 		_logScope = logScope;
 	}
 
-	private bool disposed;
+	private bool _disposed;
 	protected virtual void Dispose(bool disposing)
 	{
-		if (!disposed)
-		{
-			if (disposing)
-			{
-				_logScope?.Dispose();
-			}
+		if (_disposed)
+			return;
 
-			disposed = true;
-		}
+		_disposed = true;
+
+		if (disposing)
+			_logScope?.Dispose();
 	}
 
 	public void Dispose()
@@ -54,26 +52,26 @@ public class MethodLogScope : IDisposable
 		[CallerLineNumber] int sourceLineNumber = 0)
 		=> Create(methodLogScope.TraceInfo.SourceSystemName, logger, methodLogScope.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
-		string sourceSystemName,
-		ILogger logger,
-		IEnumerable<MethodParameter>? methodParameters = null,
-		[CallerMemberName] string memberName = "",
-		[CallerFilePath] string sourceFilePath = "",
-		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(sourceSystemName, logger, (ITraceInfo?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+	//public static MethodLogScope Create(
+	//	string sourceSystemName,
+	//	ILogger logger,
+	//	IEnumerable<MethodParameter>? methodParameters = null,
+	//	[CallerMemberName] string memberName = "",
+	//	[CallerFilePath] string sourceFilePath = "",
+	//	[CallerLineNumber] int sourceLineNumber = 0)
+	//	=> Create(sourceSystemName, logger, (ITraceInfo?)null, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
-		string sourceSystemName,
-		ILogger logger,
-		MethodLogScope? methodLogScope,
-		IEnumerable<MethodParameter>? methodParameters = null,
-		[CallerMemberName] string memberName = "",
-		[CallerFilePath] string sourceFilePath = "",
-		[CallerLineNumber] int sourceLineNumber = 0)
-		=> Create(sourceSystemName, logger, methodLogScope?.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
+	//public static MethodLogScope Create(
+	//	string sourceSystemName,
+	//	ILogger logger,
+	//	MethodLogScope? methodLogScope,
+	//	IEnumerable<MethodParameter>? methodParameters = null,
+	//	[CallerMemberName] string memberName = "",
+	//	[CallerFilePath] string sourceFilePath = "",
+	//	[CallerLineNumber] int sourceLineNumber = 0)
+	//	=> Create(sourceSystemName, logger, methodLogScope?.TraceInfo, methodParameters, memberName, sourceFilePath, sourceLineNumber);
 
-	public static MethodLogScope Create(
+	private static MethodLogScope Create(
 		string sourceSystemName,
 		ILogger logger,
 		ITraceInfo? previousTraceInfo,

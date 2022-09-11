@@ -28,6 +28,7 @@ public class LogMessage : ILogMessage
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
 	public Exception? Exception { get; internal set; }
+	public bool ShouldSerializeException() => false;
 	Exception? ILogMessage.Exception
 	{
 		get => Exception;
@@ -36,15 +37,43 @@ public class LogMessage : ILogMessage
 
 	public string? StackTrace { get; set; }
 	public string? Detail { get; set; }
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string ClientMessageWithId => ToString(true, false, false);
+	public bool ShouldSerializeClientMessageWithId() => false;
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string ClientMessageWithIdAndPropName => ToString(true, true, false);
+	public bool ShouldSerializeClientMessageWithIdAndPropName() => false;
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public string FullMessage => ToString(true, true, true);
+	public bool ShouldSerializeFullMessage() => false;
+
 	public bool IsLogged { get; set; }
 	public string? CommandQueryName { get; set; }
 	public Guid? IdCommandQuery { get; set; }
 	public decimal? MethodCallElapsedMilliseconds { get; set; }
 	public string? PropertyName { get; set; }
+
+#if NETSTANDARD2_0 || NETSTANDARD2_1
+	[Newtonsoft.Json.JsonIgnore]
+#elif NET6_0_OR_GREATER
+	[System.Text.Json.Serialization.JsonIgnore]
+#endif
 	public object? ValidationFailure { get; set; }
+	public bool ShouldSerializeValidationFailure() => false;
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
 	public Dictionary<string, string>? CustomData { get; set; }
@@ -58,7 +87,7 @@ public class LogMessage : ILogMessage
 	}
 
 	private static ILogMessage CreateLogMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		LogLevel logLevel,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
@@ -68,7 +97,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new LogMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new LogMessageBuilder(Trace.TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -98,7 +127,7 @@ public class LogMessage : ILogMessage
 	}
 
 	private static IErrorMessage CreateErrorMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		LogLevel logLevel,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
@@ -108,7 +137,7 @@ public class LogMessage : ILogMessage
 		if (messageBuilder == null)
 			throw new ArgumentNullException(nameof(messageBuilder));
 
-		var builder = new ErrorMessageBuilder(Trace.TraceInfo.Create(sourceSystemName, (EnvelopePrincipal?)null, null, null, memberName, sourceFilePath, sourceLineNumber))
+		var builder = new ErrorMessageBuilder(Trace.TraceInfo.Create(applicationContext, null, memberName, sourceFilePath, sourceLineNumber))
 			.LogLevel(logLevel);
 
 		messageBuilder.Invoke(builder);
@@ -138,12 +167,12 @@ public class LogMessage : ILogMessage
 	}
 
 	public static ILogMessage CreateTraceMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Trace, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Trace, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateTraceMessage(
 		ITraceInfo traceInfo,
@@ -151,12 +180,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Trace, messageBuilder);
 
 	public static ILogMessage CreateDebugMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Debug, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Debug, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateDebugMessage(
 		ITraceInfo traceInfo,
@@ -164,12 +193,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Debug, messageBuilder);
 
 	public static ILogMessage CreateInformationMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Information, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Information, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateInformationMessage(
 		ITraceInfo traceInfo,
@@ -177,12 +206,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Information, messageBuilder);
 
 	public static ILogMessage CreateWarningMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<LogMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateLogMessage(sourceSystemName, LogLevel.Warning, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateLogMessage(applicationContext, LogLevel.Warning, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static ILogMessage CreateWarningMessage(
 		ITraceInfo traceInfo,
@@ -190,12 +219,12 @@ public class LogMessage : ILogMessage
 		=> CreateLogMessage(traceInfo, LogLevel.Warning, messageBuilder);
 
 	public static IErrorMessage CreateErrorMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateErrorMessage(sourceSystemName, LogLevel.Error, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateErrorMessage(applicationContext, LogLevel.Error, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static IErrorMessage CreateErrorMessage(
 		ITraceInfo traceInfo,
@@ -203,12 +232,12 @@ public class LogMessage : ILogMessage
 		=> CreateErrorMessage(traceInfo, LogLevel.Error, messageBuilder);
 
 	public static IErrorMessage CreateCriticalMessage(
-		string sourceSystemName,
+		IApplicationContext applicationContext,
 		Action<ErrorMessageBuilder> messageBuilder,
 		[CallerMemberName] string memberName = "",
 		[CallerFilePath] string sourceFilePath = "",
 		[CallerLineNumber] int sourceLineNumber = 0)
-		=> CreateErrorMessage(sourceSystemName, LogLevel.Critical, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
+		=> CreateErrorMessage(applicationContext, LogLevel.Critical, messageBuilder, memberName, sourceFilePath, sourceLineNumber);
 
 	public static IErrorMessage CreateCriticalMessage(
 		ITraceInfo traceInfo,

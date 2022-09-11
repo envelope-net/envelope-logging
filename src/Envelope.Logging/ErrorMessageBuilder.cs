@@ -43,7 +43,7 @@ public class ErrorMessageBuilder : ErrorMessageBuilderBase<ErrorMessageBuilder, 
 	{
 	}
 
-	public ErrorMessageBuilder(ErrorMessage errorMessage)
+	public ErrorMessageBuilder(IErrorMessage errorMessage)
 		: base(errorMessage)
 	{
 	}

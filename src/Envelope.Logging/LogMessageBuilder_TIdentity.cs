@@ -333,7 +333,7 @@ public class LogMessageBuilder<TIdentity> : LogMessageBuilderBase<LogMessageBuil
 	{
 	}
 
-	public LogMessageBuilder(LogMessage<TIdentity> logMessage)
+	public LogMessageBuilder(ILogMessage<TIdentity> logMessage)
 		: base(logMessage)
 	{
 	}

@@ -362,7 +362,7 @@ public class LogMessageBuilder : LogMessageBuilderBase<LogMessageBuilder, ILogMe
 	{
 	}
 
-	public LogMessageBuilder(LogMessage logMessage)
+	public LogMessageBuilder(ILogMessage logMessage)
 		: base(logMessage)
 	{
 	}

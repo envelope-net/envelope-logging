@@ -27,7 +27,7 @@ public interface ILogMessage<TIdentity> : Serializer.IDictionaryObject
 #elif NET6_0_OR_GREATER
 	[System.Text.Json.Serialization.JsonIgnore]
 #endif
-	Exception? Exception { get; internal set; }
+	Exception? Exception { get; set; }
 
 	string? StackTrace { get; set; }
 
