@@ -57,11 +57,13 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 
 	TBuilder ExceptionInfo(Exception? exception, bool force = false);
 
-	TBuilder CustomData(Dictionary<string, string> customData, bool force = false);
+	TBuilder CustomData(Dictionary<string, string?> customData, bool force = false);
 
 	TBuilder Tags(List<string> tags, bool force = false);
 
-	TBuilder AddCustomData(string key, string value, bool force = false);
+	TBuilder AddCustomData(string key, string? value, bool force = false);
+
+	TBuilder AddTraceInfoProperties(ITraceInfo traceInfo, bool force = false);
 
 	TBuilder AddTag(string tag, bool force = false);
 }
@@ -88,7 +90,10 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 	}
 
 	public TObject Build()
-		=> _logMessage;
+	{
+		AddTraceInfoProperties(_logMessage.TraceInfo);
+		return _logMessage;
+	}
 
 	public virtual TBuilder LogLevel(LogLevel logLevel, bool force = false)
 	{
@@ -307,7 +312,7 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder CustomData(Dictionary<string, string> customData, bool force = false)
+	public TBuilder CustomData(Dictionary<string, string?> customData, bool force = false)
 	{
 		if (force || _logMessage.CustomData == null || _logMessage.CustomData.Count == 0)
 			_logMessage.CustomData = customData;
@@ -323,10 +328,9 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder AddCustomData(string key, string value, bool force = false)
+	public TBuilder AddCustomData(string key, string? value, bool force = false)
 	{
-		if (_logMessage.CustomData == null)
-			_logMessage.CustomData = new Dictionary<string, string>();
+		_logMessage.CustomData ??= new Dictionary<string, string?>();
 
 		if (force)
 			_logMessage.CustomData[key] = value;
@@ -336,10 +340,27 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
+	public TBuilder AddTraceInfoProperties(ITraceInfo traceInfo, bool force = false)
+	{
+		if (traceInfo == null)
+			return _builder;
+
+		_logMessage.CustomData ??= new Dictionary<string, string?>();
+
+		foreach (var kvp in traceInfo.ContextProperties)
+		{
+			if (force)
+				_logMessage.CustomData[kvp.Key] = kvp.Value;
+			else
+				_logMessage.CustomData.TryAdd(kvp.Key, kvp.Value);
+		}
+
+		return _builder;
+	}
+
 	public TBuilder AddTag(string tag, bool force = false)
 	{
-		if (_logMessage.Tags == null)
-			_logMessage.Tags = new List<string>();
+		_logMessage.Tags ??= new List<string>();
 
 		if (force)
 			_logMessage.Tags.Add(tag);

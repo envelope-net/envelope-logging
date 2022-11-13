@@ -76,7 +76,7 @@ public class LogMessage : ILogMessage
 	public bool ShouldSerializeValidationFailure() => false;
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
-	public Dictionary<string, string>? CustomData { get; set; }
+	public Dictionary<string, string?>? CustomData { get; set; }
 	public List<string>? Tags { get; set; }
 
 	internal LogMessage(ITraceInfo traceInfo)
@@ -384,6 +384,14 @@ public class LogMessage : ILogMessage
 				sb.Append(Detail);
 			else
 				sb.Append($" | {Detail}");
+
+			if (0 < CustomData?.Count)
+			{
+				if (empty)
+					sb.Append(string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}")));
+				else
+					sb.Append($" | {string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}"))}");
+			}
 		}
 
 		return sb.ToString();

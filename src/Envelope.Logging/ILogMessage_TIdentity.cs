@@ -55,7 +55,7 @@ public interface ILogMessage<TIdentity> : Serializer.IDictionaryObject
 
 	bool IsValidationError { get; set; }
 
-	Dictionary<string, string>? CustomData { get; set; }
+	Dictionary<string, string?>? CustomData { get; set; }
 
 	List<string>? Tags { get; set; }
 
