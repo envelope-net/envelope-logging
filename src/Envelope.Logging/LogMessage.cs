@@ -76,7 +76,6 @@ public class LogMessage : ILogMessage
 	public bool ShouldSerializeValidationFailure() => false;
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
-	public Dictionary<string, string?>? CustomData { get; set; }
 	public List<string>? Tags { get; set; }
 
 	internal LogMessage(ITraceInfo traceInfo)
@@ -304,11 +303,11 @@ public class LogMessage : ILogMessage
 		if (TraceInfo.CorrelationId.HasValue)
 			dict.Add(nameof(TraceInfo.CorrelationId), TraceInfo.CorrelationId.Value);
 
-		if (CustomData != null && 0 < CustomData.Count)
+		if (TraceInfo.ContextProperties != null && 0 < TraceInfo.ContextProperties.Count)
 #if NETSTANDARD2_0 || NETSTANDARD2_1
-			dict.Add(nameof(CustomData), JsonConvert.SerializeObject(CustomData));
+			dict.Add(nameof(TraceInfo.ContextProperties), JsonConvert.SerializeObject(TraceInfo.ContextProperties));
 #elif NET6_0_OR_GREATER
-			dict.Add(nameof(CustomData), JsonSerializer.Serialize(CustomData));
+			dict.Add(nameof(TraceInfo.ContextProperties), JsonSerializer.Serialize(TraceInfo.ContextProperties));
 #endif
 
 		if (Tags != null && 0 < Tags.Count)
@@ -385,12 +384,12 @@ public class LogMessage : ILogMessage
 			else
 				sb.Append($" | {Detail}");
 
-			if (0 < CustomData?.Count)
+			if (0 < TraceInfo.ContextProperties?.Count)
 			{
 				if (empty)
-					sb.Append(string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}")));
+					sb.Append(string.Join("|", TraceInfo.ContextProperties.Select(x => $"{x.Key} = {x.Value}")));
 				else
-					sb.Append($" | {string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}"))}");
+					sb.Append($" | {string.Join("|", TraceInfo.ContextProperties.Select(x => $"{x.Key} = {x.Value}"))}");
 			}
 		}
 

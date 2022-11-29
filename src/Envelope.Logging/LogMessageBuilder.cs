@@ -57,13 +57,9 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 
 	TBuilder ExceptionInfo(Exception? exception, bool force = false);
 
-	TBuilder CustomData(Dictionary<string, string?> customData, bool force = false);
-
 	TBuilder Tags(List<string> tags, bool force = false);
 
 	TBuilder AddCustomData(string key, string? value, bool force = false);
-
-	TBuilder AddTraceInfoProperties(ITraceInfo traceInfo, bool force = false);
 
 	TBuilder AddTag(string tag, bool force = false);
 }
@@ -91,7 +87,6 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 
 	public TObject Build()
 	{
-		AddTraceInfoProperties(_logMessage.TraceInfo);
 		return _logMessage;
 	}
 
@@ -312,14 +307,6 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder CustomData(Dictionary<string, string?> customData, bool force = false)
-	{
-		if (force || _logMessage.CustomData == null || _logMessage.CustomData.Count == 0)
-			_logMessage.CustomData = customData;
-
-		return _builder;
-	}
-
 	public TBuilder Tags(List<string> tags, bool force = false)
 	{
 		if (force || _logMessage.Tags == null || _logMessage.Tags.Count == 0)
@@ -330,30 +317,10 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 
 	public TBuilder AddCustomData(string key, string? value, bool force = false)
 	{
-		_logMessage.CustomData ??= new Dictionary<string, string?>();
-
 		if (force)
-			_logMessage.CustomData[key] = value;
+			_logMessage.TraceInfo.ContextProperties[key] = value;
 		else
-			_logMessage.CustomData.TryAdd(key, value);
-
-		return _builder;
-	}
-
-	public TBuilder AddTraceInfoProperties(ITraceInfo traceInfo, bool force = false)
-	{
-		if (traceInfo == null)
-			return _builder;
-
-		_logMessage.CustomData ??= new Dictionary<string, string?>();
-
-		foreach (var kvp in traceInfo.ContextProperties)
-		{
-			if (force)
-				_logMessage.CustomData[kvp.Key] = kvp.Value;
-			else
-				_logMessage.CustomData.TryAdd(kvp.Key, kvp.Value);
-		}
+			_logMessage.TraceInfo.ContextProperties.TryAdd(key, value);
 
 		return _builder;
 	}
