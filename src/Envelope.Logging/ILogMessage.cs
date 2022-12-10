@@ -79,8 +79,6 @@ public interface ILogMessage : Serializer.IDictionaryObject
 	bool IsValidationError { get; set; }
 	bool ShouldSerializeValidationFailure();
 
-	Dictionary<string, string>? CustomData { get; set; }
-
 	List<string>? Tags { get; set; }
 
 	string ToString(bool withId, bool withPropertyName, bool withDetail);

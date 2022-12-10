@@ -57,11 +57,9 @@ public interface ILogMessageBuilder<TBuilder, TObject>
 
 	TBuilder ExceptionInfo(Exception? exception, bool force = false);
 
-	TBuilder CustomData(Dictionary<string, string> customData, bool force = false);
-
 	TBuilder Tags(List<string> tags, bool force = false);
 
-	TBuilder AddCustomData(string key, string value, bool force = false);
+	TBuilder AddCustomData(string key, string? value, bool force = false);
 
 	TBuilder AddTag(string tag, bool force = false);
 }
@@ -88,7 +86,9 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 	}
 
 	public TObject Build()
-		=> _logMessage;
+	{
+		return _logMessage;
+	}
 
 	public virtual TBuilder LogLevel(LogLevel logLevel, bool force = false)
 	{
@@ -307,14 +307,6 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder CustomData(Dictionary<string, string> customData, bool force = false)
-	{
-		if (force || _logMessage.CustomData == null || _logMessage.CustomData.Count == 0)
-			_logMessage.CustomData = customData;
-
-		return _builder;
-	}
-
 	public TBuilder Tags(List<string> tags, bool force = false)
 	{
 		if (force || _logMessage.Tags == null || _logMessage.Tags.Count == 0)
@@ -323,23 +315,19 @@ public abstract class LogMessageBuilderBase<TBuilder, TObject> : ILogMessageBuil
 		return _builder;
 	}
 
-	public TBuilder AddCustomData(string key, string value, bool force = false)
+	public TBuilder AddCustomData(string key, string? value, bool force = false)
 	{
-		if (_logMessage.CustomData == null)
-			_logMessage.CustomData = new Dictionary<string, string>();
-
 		if (force)
-			_logMessage.CustomData[key] = value;
+			_logMessage.TraceInfo.ContextProperties[key] = value;
 		else
-			_logMessage.CustomData.TryAdd(key, value);
+			_logMessage.TraceInfo.ContextProperties.TryAdd(key, value);
 
 		return _builder;
 	}
 
 	public TBuilder AddTag(string tag, bool force = false)
 	{
-		if (_logMessage.Tags == null)
-			_logMessage.Tags = new List<string>();
+		_logMessage.Tags ??= new List<string>();
 
 		if (force)
 			_logMessage.Tags.Add(tag);

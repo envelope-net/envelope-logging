@@ -48,7 +48,7 @@ public class LogMessage<TIdentity> : ILogMessage<TIdentity>
 	public object? ValidationFailure { get; set; }
 	public string? DisplayPropertyName { get; set; }
 	public bool IsValidationError { get; set; }
-	public Dictionary<string, string>? CustomData { get; set; }
+	public Dictionary<string, string?>? CustomData { get; set; }
 	public List<string>? Tags { get; set; }
 
 	internal LogMessage(ITraceInfo<TIdentity> traceInfo)
@@ -353,6 +353,14 @@ public class LogMessage<TIdentity> : ILogMessage<TIdentity>
 				sb.Append(Detail);
 			else
 				sb.Append($" | {Detail}");
+
+			if (0 < CustomData?.Count)
+			{
+				if (empty)
+					sb.Append(string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}")));
+				else
+					sb.Append($" | {string.Join("|", CustomData.Select(x => $"{x.Key} = {x.Value}"))}");
+			}
 		}
 
 		return sb.ToString();
