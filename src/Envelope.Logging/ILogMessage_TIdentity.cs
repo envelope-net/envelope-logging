@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Envelope.Logging;
 
+#if NET6_0_OR_GREATER
+[Envelope.Serializer.JsonPolymorphicConverter]
+#endif
 public interface ILogMessage<TIdentity> : Serializer.IDictionaryObject
 	where TIdentity : struct
 {
