@@ -6,6 +6,14 @@ namespace Envelope.Logging.Extensions;
 
 public static class ServiceCollectionExtensions
 {
+#if NET6_0_OR_GREATER
+	public static IServiceCollection ConfigureJsonPolymorphicConverters(this IServiceCollection services)
+	{
+		services.AddTransient<System.Text.Json.Serialization.JsonConverter, Envelope.Serializer.JsonPolymorphicConverterFactory>();
+		return services;
+	}
+#endif
+
 	public static IServiceCollection AddEnvelopeLogger(
 		this IServiceCollection services,
 		Action<LoggerConfiguration>? configurator,

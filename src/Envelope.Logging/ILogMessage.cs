@@ -3,6 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Envelope.Logging;
 
+#if NET6_0_OR_GREATER
+[Envelope.Serializer.JsonPolymorphicConverter]
+#endif
 public interface ILogMessage : Serializer.IDictionaryObject
 {
 	Guid IdLogMessage { get; set; }
@@ -84,4 +87,8 @@ public interface ILogMessage : Serializer.IDictionaryObject
 	string ToString(bool withId, bool withPropertyName, bool withDetail);
 
 	Exception ToException();
+
+	LogMessageDto ToDto(params string[] ignoredPropterties);
+
+	LogMessageDto ToClientDto();
 }
