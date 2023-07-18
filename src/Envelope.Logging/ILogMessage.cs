@@ -84,6 +84,8 @@ public interface ILogMessage : Serializer.IDictionaryObject
 
 	List<string>? Tags { get; set; }
 
+	public bool DisableTransactionRollback { get; set; }
+
 	string ToString(bool withId, bool withPropertyName, bool withDetail);
 
 	Exception ToException();

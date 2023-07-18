@@ -76,6 +76,8 @@ public class LogMessageDto : ILogMessage
 	public bool IsValidationError { get; set; }
 	public List<string>? Tags { get; set; }
 
+	public bool DisableTransactionRollback { get; set; }
+
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
 	public LogMessageDto()
 	{

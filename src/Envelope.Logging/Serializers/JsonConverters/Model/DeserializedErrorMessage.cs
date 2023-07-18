@@ -43,6 +43,8 @@ public class DeserializedErrorMessage : IErrorMessage
 
 	public List<string>? Tags { get; set; }
 
+	public bool DisableTransactionRollback { get; set; }
+
 	public bool IsValidationError { get; set; }
 
 

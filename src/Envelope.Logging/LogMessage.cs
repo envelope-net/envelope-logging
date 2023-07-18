@@ -77,6 +77,8 @@ public class LogMessage : ILogMessage
 	public bool IsValidationError { get; set; }
 	public List<string>? Tags { get; set; }
 
+	public bool DisableTransactionRollback { get; set; }
+
 	internal LogMessage(ITraceInfo traceInfo)
 	{
 		IdLogMessage = Guid.NewGuid();
