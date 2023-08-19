@@ -16,6 +16,7 @@ public class ErrorMessageDto : LogMessageDto, IErrorMessage
 	{
 		throw new NotImplementedException();
 	}
+
 	public ErrorMessage ToErrorMessage(params string[] ignoredPropterties)
 	{
 		ignoredPropterties ??= Array.Empty<string>();
